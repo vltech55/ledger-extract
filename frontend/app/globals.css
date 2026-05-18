@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+html, body { height: 100%; background: #0a0a0b; color: #ededed; }
+
+.conf-bar { height: 4px; border-radius: 2px; background: #27272a; overflow: hidden; }
+.conf-bar-fill { height: 100%; transition: width 200ms; }
+.conf-bar-fill.high { background: #22c55e; }
+.conf-bar-fill.med  { background: #f59e0b; }
+.conf-bar-fill.low  { background: #ef4444; }
