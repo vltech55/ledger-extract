@@ -1,20 +1,21 @@
 "use client";
 
-const COLORS: Record<string, string> = {
-  pending: "bg-neutral-700 text-neutral-200",
-  processing: "bg-sky-700/40 text-sky-200",
-  extracted: "bg-green-700/30 text-green-200",
-  failed: "bg-red-700/40 text-red-200",
-  auto_approved: "bg-green-700/30 text-green-200",
-  needs_review: "bg-amber-700/40 text-amber-200",
-  reviewed_corrected: "bg-violet-700/40 text-violet-200",
+import { Badge } from "@/components/ui/badge";
+import { Clock, Loader2, CheckCircle2, XCircle, AlertTriangle, Edit3 } from "lucide-react";
+
+type Variant = "default" | "success" | "info" | "warning" | "danger" | "violet" | "neutral";
+
+const META: Record<string, { variant: Variant; icon: React.ReactNode; label: string }> = {
+  pending:            { variant: "neutral", icon: <Clock className="h-2.5 w-2.5" />,         label: "Pending" },
+  processing:         { variant: "info",    icon: <Loader2 className="h-2.5 w-2.5 animate-spin" />, label: "Processing" },
+  extracted:          { variant: "success", icon: <CheckCircle2 className="h-2.5 w-2.5" />,  label: "Extracted" },
+  failed:             { variant: "danger",  icon: <XCircle className="h-2.5 w-2.5" />,       label: "Failed" },
+  auto_approved:      { variant: "success", icon: <CheckCircle2 className="h-2.5 w-2.5" />,  label: "Auto-approved" },
+  needs_review:       { variant: "warning", icon: <AlertTriangle className="h-2.5 w-2.5" />, label: "Needs review" },
+  reviewed_corrected: { variant: "violet",  icon: <Edit3 className="h-2.5 w-2.5" />,         label: "Corrected" },
 };
 
 export function StatusBadge({ status }: { status: string }) {
-  const cls = COLORS[status] ?? "bg-neutral-700 text-neutral-200";
-  return (
-    <span className={`inline-block rounded px-2 py-0.5 text-xs font-medium ${cls}`}>
-      {status.replace(/_/g, " ")}
-    </span>
-  );
+  const m = META[status] ?? { variant: "neutral" as Variant, icon: null, label: status.replace(/_/g, " ") };
+  return <Badge variant={m.variant}>{m.icon}{m.label}</Badge>;
 }

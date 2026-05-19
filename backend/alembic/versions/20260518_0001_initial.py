@@ -19,12 +19,16 @@ depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
-    op.execute(
-        "CREATE TYPE document_status AS ENUM ('pending','processing','extracted','failed')"
+    # SQLAlchemy auto-creates the named ENUM types when it emits the column DDL —
+    # listing the values inline is required, otherwise SA emits CREATE TYPE ... AS ENUM ()
+    # with no values and the migration explodes.
+    document_status = sa.Enum(
+        "pending", "processing", "extracted", "failed",
+        name="document_status",
     )
-    op.execute(
-        "CREATE TYPE extraction_status AS ENUM "
-        "('auto_approved','needs_review','reviewed_corrected','failed')"
+    extraction_status = sa.Enum(
+        "auto_approved", "needs_review", "reviewed_corrected", "failed",
+        name="extraction_status",
     )
 
     op.create_table(
@@ -37,7 +41,7 @@ def upgrade() -> None:
         sa.Column("page_count", sa.Integer(), nullable=True),
         sa.Column(
             "status",
-            sa.Enum(name="document_status", native_enum=True, create_type=False),
+            document_status,
             nullable=False,
             server_default="pending",
         ),
@@ -66,7 +70,7 @@ def upgrade() -> None:
         sa.Column("heuristic_signals", JSONB(), nullable=False, server_default=sa.text("'{}'::jsonb")),
         sa.Column(
             "status",
-            sa.Enum(name="extraction_status", native_enum=True, create_type=False),
+            extraction_status,
             nullable=False,
         ),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),

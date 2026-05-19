@@ -1,0 +1,133 @@
+{
+  "invoice-001.pdf": {
+    "vendor_name": "Northwind Optics GmbH",
+    "vendor_address": "Friedrichstr. 12, 10117 Berlin, DE",
+    "invoice_number": "NW-2026-0142",
+    "invoice_date": "2026-04-12",
+    "due_date": "2026-05-12",
+    "currency": "EUR",
+    "subtotal": 1416.0,
+    "tax_amount": 269.04,
+    "total_amount": 1685.04,
+    "line_items": [
+      {
+        "description": "4K Display 27\"",
+        "quantity": 2,
+        "unit_price": 549.0,
+        "line_total": 1098.0
+      },
+      {
+        "description": "USB-C Hub 7-port",
+        "quantity": 4,
+        "unit_price": 79.5,
+        "line_total": 318.0
+      }
+    ]
+  },
+  "invoice-002.pdf": {
+    "vendor_name": "Aurora Cloud Services Inc.",
+    "vendor_address": "500 Market St, San Francisco, CA 94105, USA",
+    "invoice_number": "ACS-INV-220045",
+    "invoice_date": "2026-04-30",
+    "due_date": "2026-05-30",
+    "currency": "USD",
+    "subtotal": 558.24,
+    "tax_amount": 47.45,
+    "total_amount": 605.69,
+    "line_items": [
+      {
+        "description": "Compute hours (m5.xlarge)",
+        "quantity": 720,
+        "unit_price": 0.192,
+        "line_total": 138.24
+      },
+      {
+        "description": "Egress GB",
+        "quantity": 4200,
+        "unit_price": 0.09,
+        "line_total": 378.0
+      },
+      {
+        "description": "Object storage TB-month",
+        "quantity": 2,
+        "unit_price": 21.0,
+        "line_total": 42.0
+      }
+    ]
+  },
+  "invoice-003.pdf": {
+    "vendor_name": "Sakura Manufacturing K.K.",
+    "vendor_address": "3-5-2 Roppongi, Minato, Tokyo 106-0032",
+    "invoice_number": "SM-26/A0089",
+    "invoice_date": "2026-03-05",
+    "due_date": "2026-04-05",
+    "currency": "JPY",
+    "subtotal": 115000,
+    "tax_amount": 11500.0,
+    "total_amount": 126500.0,
+    "line_items": [
+      {
+        "description": "Precision bearing 6204",
+        "quantity": 200,
+        "unit_price": 480,
+        "line_total": 96000
+      },
+      {
+        "description": "Sealing ring",
+        "quantity": 200,
+        "unit_price": 95,
+        "line_total": 19000
+      }
+    ]
+  },
+  "invoice-004.pdf": {
+    "vendor_name": "Cordillera Coffee Ltda.",
+    "vendor_address": "Cra. 7 #15-22, Bogot\u00e1, Colombia",
+    "invoice_number": "CC-0011-2026",
+    "invoice_date": "2026-04-22",
+    "due_date": "2026-05-06",
+    "currency": "USD",
+    "subtotal": 925.0,
+    "tax_amount": 46.25,
+    "total_amount": 971.25,
+    "line_items": [
+      {
+        "description": "Single-origin beans 1kg",
+        "quantity": 50,
+        "unit_price": 18.5,
+        "line_total": 925.0
+      }
+    ]
+  },
+  "invoice-005.pdf": {
+    "vendor_name": "Albion Legal LLP",
+    "vendor_address": "42 King William St, London EC4R 9DD, UK",
+    "invoice_number": "ALB/2026/Q2/0067",
+    "invoice_date": "2026-04-15",
+    "due_date": "2026-05-15",
+    "currency": "GBP",
+    "subtotal": 5065.5,
+    "tax_amount": 1013.1,
+    "total_amount": 6078.6,
+    "line_items": [
+      {
+        "description": "Partner hours - contract review",
+        "quantity": 6,
+        "unit_price": 380.0,
+        "line_total": 2280.0
+      },
+      {
+        "description": "Associate hours - drafting",
+        "quantity": 12,
+        "unit_price": 220.0,
+        "line_total": 2640.0
+      },
+      {
+        "description": "Disbursements",
+        "quantity": 1,
+        "unit_price": 145.5,
+        "line_total": 145.5
+      }
+    ]
+  }
+}

@@ -2,11 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: dark; }
-html, body { height: 100%; background: #0a0a0b; color: #ededed; }
+/* "Ledger" — Ramp/Brex financial-ops feel: cool light, dense tables, teal accents */
+:root {
+  color-scheme: light;
+  --bg: #fbfaf7;
+  --surface: #ffffff;
+  --surface-2: #f5f4f0;
+  --ink: #0f1419;
+  --ink-2: #2c3138;
+  --muted: #5b6470;
+  --subtle: #8a8f99;
+  --border: #ececea;
+  --border-strong: #d9d9d4;
+  --accent: #0a8b6a;        /* deep teal/jade */
+  --accent-soft: #e6f5ef;
+  --accent-hover: #097758;
+  --warn: #c87b1e;
+  --warn-soft: #fdf4e3;
+  --rose: #c44561;
+  --rose-soft: #fcecef;
+  --violet: #6755d4;
+  --violet-soft: #efedfb;
+}
 
-.conf-bar { height: 4px; border-radius: 2px; background: #27272a; overflow: hidden; }
-.conf-bar-fill { height: 100%; transition: width 200ms; }
-.conf-bar-fill.high { background: #22c55e; }
-.conf-bar-fill.med  { background: #f59e0b; }
-.conf-bar-fill.low  { background: #ef4444; }
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-feature-settings: 'tnum', 'ss01', 'cv11';
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.01em;
+}
+
+* { border-color: var(--border); }
+::selection { background: rgba(10, 139, 106, 0.15); }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.08); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.16); }
+
+.tabular { font-variant-numeric: tabular-nums; }
+
+/* confidence bars (re-used in HITL fields) */
+.conf-bar { height: 4px; border-radius: 999px; background: #ebebe8; overflow: hidden; }
+.conf-bar-fill { height: 100%; transition: width 200ms; border-radius: 999px; }
+.conf-bar-fill.high { background: var(--accent); }
+.conf-bar-fill.med  { background: var(--warn); }
+.conf-bar-fill.low  { background: var(--rose); }
+
+/* dense table rows */
+.row-divider > * + * { border-top: 1px solid var(--border); }

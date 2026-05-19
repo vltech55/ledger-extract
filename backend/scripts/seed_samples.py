@@ -121,8 +121,8 @@ _SAMPLES: list[_Sample] = [
         currency="GBP",
         tax_rate=0.20,
         lines=[
-            _Line("Partner hours — contract review", 6, 380.00),
-            _Line("Associate hours — drafting", 12, 220.00),
+            _Line("Partner hours - contract review", 6, 380.00),
+            _Line("Associate hours - drafting", 12, 220.00),
             _Line("Disbursements", 1, 145.50),
         ],
     ),
