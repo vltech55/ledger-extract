@@ -61,7 +61,7 @@ Each field carries an LLM confidence × 4 heuristic signals (totals match, ISO d
 ## Run locally
 
 ```bash
-git clone https://github.com/phantomdev0826/ledger-extract
+git clone https://github.com/vltech55/ledger-extract
 cd ledger-extract
 cp .env.example .env       # add ANTHROPIC_API_KEY
 docker compose up -d --build
