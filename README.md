@@ -17,14 +17,14 @@
 
 ## What it does
 
-Ledger ingests invoices (PDF, JPEG, TIFF) via **drag-drop, email-in, or S3 cron**, runs OCR via `pdf2image` + `pytesseract` for scans (or `pypdf` for digital PDFs), then a **Claude function-call** extracts a 9-field invoice schema (vendor, invoice number, dates, line items, totals).
+Ledger ingests invoices (PDF, JPEG, TIFF) via **HTTP upload / drag-drop**, runs hybrid OCR (`pypdf` first for digital PDFs; `pdf2image` + `pytesseract` fallback when text extraction yields fewer than 200 characters), then a **forced Claude function-call** (`tool_choice` pinned to `record_invoice`) extracts a strict 9-field invoice schema (vendor, invoice number, dates, line items, totals).
 
 Each field carries an LLM confidence × 4 heuristic signals (totals match, ISO dates, ISO currency, positive amounts). **High-confidence rows auto-approve** into the ledger; the rest queue for human review in a side-by-side OCR + editable-fields UI. **Every correction lands in an immutable audit log** — replayable to restore prior extraction state.
 
 ## Features
 
 - **Hybrid OCR** — `pdf2image` rasterises scanned pages for Tesseract; `pypdf` parses digital PDFs natively; text positions preserved so the reviewer sees what the LLM saw.
-- **Schema-enforced extraction** — Claude function-calling with a *frozen* prompt-version pin (v1.4.2) and strict 9-field JSON-Schema; malformed outputs cannot leave the worker.
+- **Schema-enforced extraction** — Claude function-calling with forced `tool_choice`, *frozen* prompt versions (`v1` and `v2`; v2 adds anti-hallucination rules requiring verbatim evidence) and a strict 9-field JSON-Schema validated by Pydantic; malformed outputs raise an `ExtractionError` and retry rather than reaching the database.
 - **Per-field confidence + heuristic gate** — auto-approve threshold ≥ 0.85; below that rows queue for human review.
 - **HITL review queue** — sorted by `min_confidence` ascending so the most-uncertain extractions surface first; one-click corrections.
 - **Immutable audit log** — every correction stored with reviewer id, timestamp, before/after JSON, and prompt SHA. Reproduce or roll back any prior extraction.
@@ -53,7 +53,7 @@ Each field carries an LLM confidence × 4 heuristic signals (totals match, ISO d
 | Backend     | Python 3.11, FastAPI, Pydantic 2, SQLAlchemy 2 + asyncpg, Alembic |
 | Queue       | Celery + Redis broker; idempotent on content-hash |
 | OCR         | `pdf2image` + `pytesseract` (scans), `pypdf` (digital), Pillow |
-| Extraction  | Anthropic Claude function-calling, 9-field strict JSON-Schema, frozen prompt v1.4.2 |
+| Extraction  | Anthropic Claude function-calling (forced `tool_choice`), 9-field strict JSON-Schema, frozen prompt versions (`v1` baseline / `v2` anti-hallucination) |
 | Storage     | Postgres 16; tables `documents`, `extractions`, `reviews`, `audit_log` |
 | Frontend    | Next.js 14, TypeScript, Tailwind, Recharts |
 | Ops         | Docker Compose, structlog, Tenacity retries |
@@ -75,9 +75,10 @@ Open <http://localhost:3000> for the dashboard. Upload more invoices via drag-dr
 
 ```
        ┌──────────┐
-upload │ drag-drop │
-       │ email-in │
-       │ S3 cron  │──────┐
+upload │ HTTP/    │
+       │ drag-drop│──────┐
+       │ (dedup on │      │
+       │  SHA-256) │      │
        └──────────┘      │
                          ▼
                   ┌──────────────┐         ┌──────────────┐
@@ -91,7 +92,7 @@ upload │ drag-drop │
                          │                         │
                          │                ┌────────▼───────────┐
                          │                │ Claude function-   │
-                         │                │ call · v1.4.2 pin  │
+                         │                │ call · v1/v2 pin   │
                          │                │ 9-field JSON-Schema│
                          │                └────────┬───────────┘
                          │                         │
