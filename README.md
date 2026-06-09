@@ -1,8 +1,8 @@
 <div align="center">
 
-# Ledger — Schema-Enforced LLM Invoice Extraction
+# Ledger
 
-**PDF → OCR → Claude function-calling → 9-field JSON-Schema → per-field confidence → human-in-the-loop review → immutable audit log.**
+**Schema-enforced LLM invoice extraction. PDF → OCR → Claude function-calling → 9-field JSON-Schema → per-field confidence → human-in-the-loop review → immutable audit log.**
 
 ![Ledger feature poster](docs/screenshots/feature.png)
 
@@ -15,16 +15,30 @@
 
 </div>
 
-## What it does
+---
 
-Ledger ingests invoices (PDF, JPEG, TIFF) via **HTTP upload / drag-drop**, runs hybrid OCR (`pypdf` first for digital PDFs; `pdf2image` + `pytesseract` fallback when text extraction yields fewer than 200 characters), then a **forced Claude function-call** (`tool_choice` pinned to `record_invoice`) extracts a strict 9-field invoice schema (vendor, invoice number, dates, line items, totals).
+## Table of Contents
 
-Each field carries an LLM confidence × 4 heuristic signals (totals match, ISO dates, ISO currency, positive amounts). **High-confidence rows auto-approve** into the ledger; the rest queue for human review in a side-by-side OCR + editable-fields UI. **Every correction lands in an immutable audit log** — replayable to restore prior extraction state.
+- [Overview](#overview)
+- [Features](#features)
+- [Screenshots](#screenshots)
+- [Tech Stack](#tech-stack)
+- [Installation](#installation)
+- [Architecture](#architecture)
+- [Testing](#testing)
+- [Author](#author)
+- [License](#license)
+
+## Overview
+
+Ledger ingests invoices (PDF, JPEG, TIFF) via HTTP upload and drag-drop, runs hybrid OCR (`pypdf` first for digital PDFs; `pdf2image` + `pytesseract` fallback when text extraction yields fewer than 200 characters), then a forced Claude function-call (`tool_choice` pinned to `record_invoice`) extracts a strict 9-field invoice schema (vendor, invoice number, dates, line items, totals).
+
+Each field carries an LLM confidence × 4 heuristic signals (totals match, ISO dates, ISO currency, positive amounts). High-confidence rows auto-approve into the ledger; the rest queue for human review in a side-by-side OCR + editable-fields UI. Every correction lands in an immutable audit log — replayable to restore any prior extraction state.
 
 ## Features
 
 - **Hybrid OCR** — `pdf2image` rasterises scanned pages for Tesseract; `pypdf` parses digital PDFs natively; text positions preserved so the reviewer sees what the LLM saw.
-- **Schema-enforced extraction** — Claude function-calling with forced `tool_choice`, *frozen* prompt versions (`v1` and `v2`; v2 adds anti-hallucination rules requiring verbatim evidence) and a strict 9-field JSON-Schema validated by Pydantic; malformed outputs raise an `ExtractionError` and retry rather than reaching the database.
+- **Schema-enforced extraction** — Claude function-calling with forced `tool_choice`, frozen prompt versions (`v1` and `v2`; v2 adds anti-hallucination rules requiring verbatim evidence) and a strict 9-field JSON-Schema validated by Pydantic; malformed outputs raise an `ExtractionError` and retry rather than reaching the database.
 - **Per-field confidence + heuristic gate** — auto-approve threshold ≥ 0.85; below that rows queue for human review.
 - **HITL review queue** — sorted by `min_confidence` ascending so the most-uncertain extractions surface first; one-click corrections.
 - **Immutable audit log** — every correction stored with reviewer id, timestamp, before/after JSON, and prompt SHA. Reproduce or roll back any prior extraction.
@@ -46,22 +60,22 @@ Each field carries an LLM confidence × 4 heuristic signals (totals match, ISO d
 </tr>
 </table>
 
-## Stack
+## Tech Stack
 
-| Layer       | Tech |
-|-------------|------|
+| Layer       | Technology |
+|-------------|------------|
 | Backend     | Python 3.11, FastAPI, Pydantic 2, SQLAlchemy 2 + asyncpg, Alembic |
 | Queue       | Celery + Redis broker; idempotent on content-hash |
 | OCR         | `pdf2image` + `pytesseract` (scans), `pypdf` (digital), Pillow |
 | Extraction  | Anthropic Claude function-calling (forced `tool_choice`), 9-field strict JSON-Schema, frozen prompt versions (`v1` baseline / `v2` anti-hallucination) |
 | Storage     | Postgres 16; tables `documents`, `extractions`, `reviews`, `audit_log` |
 | Frontend    | Next.js 14, TypeScript, Tailwind, Recharts |
-| Ops         | Docker Compose, structlog, Tenacity retries |
+| Operations  | Docker Compose, structlog, Tenacity retries |
 
-## Run locally
+## Installation
 
 ```bash
-git clone https://github.com/vltech55/ledger-extract
+git clone https://github.com/vltech55/ledger-extract.git
 cd ledger-extract
 cp .env.example .env       # add ANTHROPIC_API_KEY
 docker compose up -d --build
@@ -113,7 +127,7 @@ upload │ HTTP/    │
                                             └─────────────┘
 ```
 
-## Tests
+## Testing
 
 ```bash
 docker compose exec backend pytest
@@ -121,6 +135,12 @@ docker compose exec backend pytest
 
 Includes tests for the prompt pinning, JSON-Schema strict-mode rejection, heuristic confidence calculation, and audit-log immutability.
 
+## Author
+
+**Vlad L.** — independent senior engineer specializing in production-grade LLM systems (RAG, agents, gateways, multi-tenant SaaS).
+
+[![GitHub](https://img.shields.io/badge/GitHub-vltech55-181717?logo=github)](https://github.com/vltech55)
+
 ## License
 
-MIT
+[MIT](LICENSE) © Vlad L.
